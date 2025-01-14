@@ -21,6 +21,21 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
+app.post('/api/data', async (req, res) => {
+  const receivedData = req.body;
+  console.log('Data received:', receivedData);
+
+  try {
+      const result = await servicesCollection.insertOne(receivedData);
+      res.json({ message: 'Data received and inserted successfully!', receivedData });
+  } catch (err) {
+      console.error('Error inserting data:', err);
+      res.status(500).json({ message: 'Failed to insert data', error: err.message });
+  }
+});  
+
+
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
