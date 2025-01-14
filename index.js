@@ -48,6 +48,24 @@ app.get('/api/cart', async (req, res) => {
   }
 });
   
+
+app.get('/api/services', async (req, res) => {
+  const search = req.query?.search;
+  const query = search
+      ? { serviceName: { $regex: search, $options: "i" } }
+      : {};
+  console.log(query);
+
+  try {
+      const services = await servicesCollection.find(query).toArray();
+      res.json(services);
+  } catch (err) {
+      console.error('Error fetching data:', err);
+      res.status(500).json({ message: 'Failed to fetch data', error: err.message });
+  }
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
