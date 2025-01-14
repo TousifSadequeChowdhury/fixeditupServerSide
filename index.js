@@ -119,6 +119,25 @@ app.put('/api/cart/:itemId/status', async (req, res) => {
   }
 });
 
+app.put('/edit/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const result = await servicesCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: req.body }
+      );
+
+      if (result.matchedCount === 0) {
+          return res.status(404).json({ message: 'Service not found' });
+      }
+
+      res.json({ message: 'Service updated successfully' });
+  } catch (error) {
+      console.error('Error updating service:', error);
+      res.status(500).json({ message: 'Error updating document', error: error.message });
+  }
+});
 
 
 app.listen(PORT, () => {
