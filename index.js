@@ -65,7 +65,34 @@ app.get('/api/services', async (req, res) => {
   }
 });
 
+app.post('/api/cart', async (req, res) => {
+  const { serviceId, serviceName, price, serviceArea, userEmail, status = 'pending' } = req.body;
 
+  try {
+      const service = await servicesCollection.findOne({ _id: new ObjectId(serviceId) });
+      if (!service) {
+          return res.status(404).json({ message: 'Service not found' });
+      }
+
+      const proemail = service.email;
+      const cartItem = {
+          serviceId,
+          serviceName,
+          price,
+          serviceArea,
+          userEmail,
+          proemail,
+          status,
+      };
+
+      const result = await cartCollection.insertOne(cartItem);
+      res.status(201).json({ message: 'Service added to cart', cartId: result.insertedId });
+  } catch (err) {
+      console.error('Error adding service to cart:', err);
+      res.status(500).json({ message: 'Failed to add service to cart', error: err.message });
+  }
+});
+ 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
