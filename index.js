@@ -140,6 +140,30 @@ app.put('/edit/:id', async (req, res) => {
 });
 
 
+
+app.delete('/api/items/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid ID format' });
+  }
+
+  try {
+      const result = await servicesCollection.deleteOne({ _id: new ObjectId(id) });
+
+      if (result.deletedCount === 0) {
+          return res.status(404).json({ message: 'Item not found' });
+      }
+
+      res.status(200).json({ message: 'Item deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting item:', error);
+      res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
+
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
