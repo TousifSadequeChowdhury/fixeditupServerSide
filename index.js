@@ -93,6 +93,34 @@ app.post('/api/cart', async (req, res) => {
   }
 });
  
+
+app.put('/api/cart/:itemId/status', async (req, res) => {
+  const { itemId } = req.params;
+  const { status } = req.body;
+
+  try {
+      if (!['pending', 'completed', 'cancelled'].includes(status)) {
+          return res.status(400).json({ message: 'Invalid status' });
+      }
+
+      const result = await cartCollection.updateOne(
+          { _id: new ObjectId(itemId) },
+          { $set: { status } }
+      );
+
+      if (result.matchedCount === 0) {
+          return res.status(404).json({ message: 'Cart item not found' });
+      }
+
+      res.json({ message: 'Status updated successfully' });
+  } catch (error) {
+      console.error('Error updating status:', error);
+      res.status(500).json({ message: 'Error updating status', error: error.message });
+  }
+});
+
+
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
