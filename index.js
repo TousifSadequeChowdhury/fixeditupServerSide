@@ -35,7 +35,19 @@ app.post('/api/data', async (req, res) => {
 });  
 
 
-
+app.get('/api/cart', async (req, res) => {
+  try {
+      const cartItems = await cartCollection.find({}).toArray();
+      if (!cartItems.length) {
+          return res.status(404).json({ message: 'No items found in the cart' });
+      }
+      res.status(200).json(cartItems);
+  } catch (err) {
+      console.error('Error fetching cart items:', err);
+      res.status(500).json({ message: 'Failed to retrieve cart items', error: err.message });
+  }
+});
+  
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
