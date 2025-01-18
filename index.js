@@ -12,11 +12,12 @@ const client = new MongoClient(uri, {
 const database = client.db("FixedItUp");
 const servicesCollection = database.collection("services");
 const cartCollection = database.collection("cart");
-
+app.use(cors());
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://fixeditup.netlify.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -66,7 +67,7 @@ app.get('/api/services', async (req, res) => {
 });
 
 app.post('/api/cart', async (req, res) => {
-  const { serviceId, serviceName, price, serviceArea, userEmail, status = 'pending' } = req.body;
+  const { serviceId, serviceName, price, serviceArea, userEmail, status = 'pending',specialInstructions } = req.body;
 
   try {
       const service = await servicesCollection.findOne({ _id: new ObjectId(serviceId) });
@@ -83,6 +84,7 @@ app.post('/api/cart', async (req, res) => {
           userEmail,
           proemail,
           status,
+          specialInstructions,
       };
 
       const result = await cartCollection.insertOne(cartItem);
